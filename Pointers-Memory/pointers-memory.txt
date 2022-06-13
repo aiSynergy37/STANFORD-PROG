@@ -1,0 +1,52 @@
+
+SECTION 4 - HEAP MEMORY
+
+"Heap" memory, also knwon as "dynamic" memory, is an alternative to local stack memory. Local memory is quite automatic -- it is allocated automatically on function call and it is deallocated automatically when a function eixts. Heap memory is different in every way. The programmer explicitly requests the allocation of a memory "block" of a particular size, and the block continues to be allocated until the programmer explicitly requests that it be deallocated. Nothing happens automatically. So the programmer has much gretaer control of memory, but with greater responsibility since the memory must now be actively managed. The advantages of heap memory are ...
+	
+		Lifetime: Because the programmer now controls exactly when memory is allocated and deallocated, it is possible to build a data structure in memory, and return the data structure to the caller. This was never possible with local memory which was automatically deallocated when the function exited.
+
+		Size: The size of allocated memory can be controlled with more detail. For example, a string buffer can be allocated at run-time which is exactly the right size to hold a particular string. With local memory, the code is more likely to declare a buffer size 1000 and hope for the best. (See the StringCopy() example below.)
+
+The disadvantages of heap memory are:
+	More Work. Heap allocation needs to be arranged explicitly in the code which is just more work.
+
+	More Bugs. Because it's now done explicitly in the code, realistically on ocassion the allocation will be done incorrectly leading to memory bugs. Local memory is constrained, but at least it's never wrong.
+
+Nonetheless, there are many problems that can only be solved with heap memory, so that's that way it has to be. In languages with garbage collectors such as Perl, LISP, or Java, the above disadvantafes are mostly eliminated. The garbage collector takes over most of the responsibility for heap management at the cost of a little extra time taken at run time.
+
+WHAT DOES THE HEAP LOOK LIKE?
+Before seeing the exact details, let's look at a rough example of allocation and deallocation in the heap.
+
+
+ALLOCATION
+The heap is a large area of memory available for use by the program. The program can request areas, or "blocks", of memory for it's use within the heap. In order to allocate a block of some size, the program makes an explicit request by calling the heap allocation function. THe allocation function reserves a block of memory of the requested size in the heap and returns a pointer to it. Suppose a program makes three allocation requests to allocate memory to hold three separate GIF images in the heap each of which takes 1024 bytes of memory. After the three allocation requests, memory might look like -
+
+
+Each allocation request reserves a contiguous area of the requested size in the heap and returns  a pointer to that new block to the program. SInce each block is always referred to by a pointer, the block always plays the role of a "pointee"(section 1) and the program always manipulates its heap blocks through pointers. The heap block pointers are sometimes known as "baseaddress" pointers since by convention they point to the base (lowest address byte) of the block.
+
+
+In this example, the three blocks have been allocated contiguously starting at the bottom of the heap, and each block is 1024 bytes in size as requested. In reality, the heap manager can allocate the blocks wherever it wants in the heap so long as the blocks do not overlap and they are at least the requested size. At any particular moment, some areas in the heap have been allocated to the program and so are "in use". Other areas have yet to be committed and so are "free" and are available to satisfy allocation requests. THe heap manager has its own, private data structures to record what areas of the heap are committed to what purpose at any moment. The heap manager satisfies each allocation request from the pool of free memory and updates its private data structures to record which areas  of the heap are in use.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Heap Memory Summary
+Heap memory provides greater control for the programmer ---  the blocks of memory can be requested in any size and they remain allocated until they are deallocated explicitly. Heap memory can be passed back to the caller since it is not deallocated on exit, and it can be used to build linked structures such as linked lists and binary trees. The disadvantage of heap memory is that the program must make explicit allocation and deallocate calls to manage the heap memory. The heap memory does not operate automatically and conveniently the way local memory does.
